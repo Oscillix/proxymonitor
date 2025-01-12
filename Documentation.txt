@@ -1,0 +1,52 @@
+External Libraries:
+1. fmt: 
+   - Used for logging to the console and files.
+2. os: 
+   - Interaction with environment variables, file handling, and process management.
+3. path/filepath: 
+   - Constructing file paths.
+4. strconv: 
+   - Converts strings (e.g., PIDs in this project) to integers.
+5. syscall: 
+   - Provides functionality for signaling and killing processes.
+6. time: 
+   - Enables time-based operations like logging timestamps.
+
+Third-Party Libraries:
+1. github.com/allan-simon/go-singleinstance:
+   - Ensures only one instance of the application runs by creating a '.lock' file.
+   - Chosen for its lightweight and its ease of use.
+
+2. github.com/getlantern/systray:
+   - Handles the creation and management of the system tray icon and menu.
+   - Selected for its cross-platform support and simplicity in handling GUI operations.
+
+3. golang.org/x/sys/windows/registry:
+   - Provides direct access to the Windows registry for reading proxy settings.
+   - Ideal for direct registry access.
+
+Code Structure:
+
+Entire program was written in camelCase naming convention.
+
+1. startLogging:
+   - Reads proxy settings ('ProxyEnable' and 'ProxyServer') from the Windows registry.
+   - Detects changes in proxy settings and logs them to a file in '%APPDATA%\proxymonitor\proxymonitor.log'.
+   - Runs in a loop to continuously monitor changes with a one-second interval.
+
+2. startProxy and stopProxy:
+   - startProxy: Launches proxy monitoring in a separate goroutine.
+   - stopProxy: Signals the monitoring goroutine to stop by updating a global variable.
+
+3. killProcess:
+   - Terminates a process by its PID. Used to quit any existing application instance based on the '.lock' file when '-quit' is called.
+
+4. Command-Line Argument Handling (in main, line 138):
+   - Processes arguments like '-start', '-stop', and '-quit'.
+
+5. System Tray Functionality (in main, line 172):
+   - onReady:
+     - Initializes the system tray menu with "Start," "Stop," and "Quit" options.
+     - Links menu actions to corresponding functions ('startProxy', 'stopProxy', 'systray.Quit').
+   - onExit:
+     - Ensures proxy monitoring stops cleanly when the application exits.
